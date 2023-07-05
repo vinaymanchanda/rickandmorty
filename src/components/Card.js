@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { BsCircleFill } from "react-icons/bs";
 
-const UseEffectAPI = () => {
+const Card = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -84,7 +85,8 @@ const UseEffectAPI = () => {
 };
 
 const CharacterCard = ({ character, renderEpisodeNames }) => {
-  const { image, name, status, species, gender, origin, location, episode } = character;
+  const { image, name, status, species, gender, origin, location, episode } =
+    character;
   const [episodeNames, setEpisodeNames] = useState([]);
   const [locationDetails, setLocationDetails] = useState(null);
   const [originDetails, setOriginDetails] = useState(null);
@@ -120,7 +122,6 @@ const CharacterCard = ({ character, renderEpisodeNames }) => {
     fetchLocationDetails();
   }, [location.url]);
 
-
   const getOriginDetails = async (originUrl) => {
     try {
       const response = await axios.get(originUrl);
@@ -146,7 +147,7 @@ const CharacterCard = ({ character, renderEpisodeNames }) => {
   return (
     <div className="col-12 col-sm-6 col-md-4 col-lg-3 mt-5 ">
       <div className="card border border-dark">
-        <div className="profile-image">
+        <div className="profile-image border border-dark">
           <img
             src={image}
             className="rounded"
@@ -159,58 +160,76 @@ const CharacterCard = ({ character, renderEpisodeNames }) => {
           <h4 className="description_name font-weight-bold mb-0 mt-0 textLeft text-body fw-bold">
             {name}
           </h4>
-          <div className="character-details ">
+          <div className="character-details  border border-dark  p-1">
             <div className="section ">
-            <p className="description_title">Gender: {gender}</p>
-            <p className="description_title">Status: {status}</p>
-            <p className="description_title">Species: {species}</p>
-           
+              <p className="description_title">Gender: {gender}</p>
+              <div className="status-icons d-flex ">
+                <p className="description_title">Status: {status}</p>
+                {status === "Alive" && (
+                  <BsCircleFill className="text-success " />
+                )}
+                {status === "Dead" && <BsCircleFill className="text-danger" />}
+                {status === "unknown" && (
+                  <BsCircleFill className="text-secondary" />
+                )}
               </div>
-              </div>
-          <div className="origin-and-location ">
-            <div className="section ">
-              <span className="description_title">Origin Name: {originDetails.name}</span>
-              {originDetails.dimension && (
+              <p className="description_title">Species: {species}</p>
+            </div>
+          </div>
+          <div className="origin-and-location d-flex justify-content-around  border border-dark p-1">
+            <div className="section  border border-dark p-1">
+              {locationDetails && (
                 <>
-                  <span className="description_title">Dimension:</span>
-                  <span className="description_value">{originDetails.dimension}</span>
-                </>
-              )}
-              {originDetails.residents && (
-                <>
-                  <span className="description_title">Residents:</span>
-                  <span className="description_value">
-                    {originDetails.residents.length}
+                  <span className="description_title">
+                    Current Location: {location.name}
                   </span>
+                  {locationDetails.dimension && (
+                    <>
+                      <span className="description_title">
+                        Dimension: {locationDetails.dimension}
+                      </span>
+                    </>
+                  )}
+                  {locationDetails.residents && (
+                    <>
+                      <span className="description_title">
+                        Residents: {locationDetails.residents.length}
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </div>
 
-            <div className="section">
-              <span className="description_title">Current Location:</span>
-              <span className="description_value">{location.name}</span>
-              {locationDetails.dimension && (
+            <div className="section  border border-dark p-1">
+              {originDetails && (
                 <>
-                  <span className="description_title">Dimension:</span>
-                  <span className="description_value">
-                    {locationDetails.dimension}
+                  <span className="description_title">
+                    Origin Name: {originDetails.name}
                   </span>
-                </>
-              )}
-              {locationDetails.residents && (
-                <>
-                  <span className="description_title">Residents:</span>
-                  <span className="description_value">
-                    {locationDetails.residents.length}
-                  </span>
+                  {originDetails.dimension && (
+                    <>
+                      <span className="description_title">
+                        Dimension: {originDetails.dimension}
+                      </span>
+                    </>
+                  )}
+                  {originDetails.residents && (
+                    <>
+                      <span className="description_title">
+                        Residents: {originDetails.residents.length}
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </div>
           </div>
 
-          <div className="episode-names">
-            <span className="description_title">Episode Names:</span>
-            <div className="episode-names_list text-body">
+          <div className="section border border-dark p-1">
+            <div className="episode-names_list">
+              <p className="description_title">Episode Names:</p>
+
               {episodeNames.length > 0 ? (
                 episodeNames.map((episodeName, index) => (
                   <span key={index}>{episodeName} , </span>
@@ -247,4 +266,4 @@ CharacterCard.propTypes = {
   }).isRequired,
 };
 
-export default UseEffectAPI;
+export default Card;
