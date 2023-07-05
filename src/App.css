@@ -253,9 +253,7 @@ html {
   
   
   
-  h2 {
-  font-weight: 800;
-  }
+  
   
   
   h2 {
@@ -283,7 +281,7 @@ html {
   
   
   .description_title {
-  color:rgb(158, 158, 158);
+  color:rgb(11, 5, 5);
   font-size: 16px;
   font-weight: 500;
   }

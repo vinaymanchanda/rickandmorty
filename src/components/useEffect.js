@@ -48,9 +48,9 @@ const UseEffectAPI = () => {
     <>
       <h2 className="text-body">List of Rick and Morty Characters</h2>
       <div className="container-fluid mt-5">
-        <div className="row">
+        <div className="d-flex justify-content-around">
           <button
-            disabled={page === 1}
+            className={`btn btn-primary p-2 ${page === 1 ? "disabled" : ""}`}
             onClick={() => {
               setPage((prevPage) => prevPage - 1);
             }}
@@ -58,7 +58,9 @@ const UseEffectAPI = () => {
             prev
           </button>
           <button
-            disabled={users.length === 0}
+            className={`btn btn-primary p-2 ${
+              users.length === 0 ? "disabled" : ""
+            }`}
             onClick={() => {
               setPage((prevPage) => prevPage + 1);
             }}
@@ -66,6 +68,7 @@ const UseEffectAPI = () => {
             next
           </button>
         </div>
+
         <div className="row">
           {users.map((curElement) => (
             <CharacterCard
@@ -81,8 +84,10 @@ const UseEffectAPI = () => {
 };
 
 const CharacterCard = ({ character, renderEpisodeNames }) => {
-  const { image, name, species, gender, origin, location, episode } = character;
+  const { image, name, status, species, gender, origin, location, episode } = character;
   const [episodeNames, setEpisodeNames] = useState([]);
+  const [locationDetails, setLocationDetails] = useState(null);
+  const [originDetails, setOriginDetails] = useState(null);
 
   useEffect(() => {
     const fetchEpisodeNames = async () => {
@@ -93,82 +98,131 @@ const CharacterCard = ({ character, renderEpisodeNames }) => {
     fetchEpisodeNames();
   }, [episode, renderEpisodeNames]);
 
+  const getLocationDetails = async (locationUrl) => {
+    try {
+      const response = await axios.get(locationUrl);
+      const locationDetails = response.data;
+      return locationDetails;
+    } catch (error) {
+      console.log("Error fetching location names:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchLocationDetails = async () => {
+      if (location.url) {
+        const details = await getLocationDetails(location.url);
+        setLocationDetails(details);
+      }
+    };
+
+    fetchLocationDetails();
+  }, [location.url]);
+
+
+  const getOriginDetails = async (originUrl) => {
+    try {
+      const response = await axios.get(originUrl);
+      const originDetails = response.data;
+      return originDetails;
+    } catch (error) {
+      console.log("Error fetching location names:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchOriginDetails = async () => {
+      if (origin.url) {
+        const details = await getOriginDetails(origin.url);
+        setOriginDetails(details);
+      }
+    };
+
+    fetchOriginDetails();
+  }, [origin.url]);
+
   return (
-    <div className="col-12 col-sm-6 col-md-4 col-lg-3 mt-5">
-      <div className="card">
-          <div className="profile-image">
-            <img
-              src={image}
-              className="rounded"
-              width="220"
-              height="auto"
-              alt={name}
-            />
-          </div>
-          <div className="description">
-            <h2 className="description_name font-weight-bold mb-0 mt-0 textLeft text-body">
-              {name}
-            </h2>
-            <h5 className="description_gender mb-0 mt-0 textLeft text-body">
-              {gender}
-            </h5>
-              <div className="origin-and-location ">
-                <div className="section ">
-                <span className="description_title">Origin:</span>
-              <span className="description_value">{origin.name}</span>
-              {origin.dimension && (
+    <div className="col-12 col-sm-6 col-md-4 col-lg-3 mt-5 ">
+      <div className="card border border-dark">
+        <div className="profile-image">
+          <img
+            src={image}
+            className="rounded"
+            width="100%"
+            height="auto"
+            alt={name}
+          />
+        </div>
+        <div className="description">
+          <h4 className="description_name font-weight-bold mb-0 mt-0 textLeft text-body fw-bold">
+            {name}
+          </h4>
+          <div className="character-details ">
+            <div className="section ">
+            <p className="description_title">Gender: {gender}</p>
+            <p className="description_title">Status: {status}</p>
+            <p className="description_title">Species: {species}</p>
+           
+              </div>
+              </div>
+          <div className="origin-and-location ">
+            <div className="section ">
+              <span className="description_title">Origin Name: {originDetails.name}</span>
+              {originDetails.dimension && (
                 <>
                   <span className="description_title">Dimension:</span>
-                  <span className="description_value">{origin.dimension}</span>
-                </> 
-                
+                  <span className="description_value">{originDetails.dimension}</span>
+                </>
               )}
-              {origin.residents && (
+              {originDetails.residents && (
                 <>
                   <span className="description_title">Residents:</span>
-                  <span className="description_value">{origin.residents.length}</span>
+                  <span className="description_value">
+                    {originDetails.residents.length}
+                  </span>
                 </>
               )}
             </div>
 
-                
-
-                <div className="section">
-                <span className="description_title">Current Location:</span>
+            <div className="section">
+              <span className="description_title">Current Location:</span>
               <span className="description_value">{location.name}</span>
-              {location.dimension && (
+              {locationDetails.dimension && (
                 <>
                   <span className="description_title">Dimension:</span>
-                  <span className="description_value">{location.dimension}</span>
+                  <span className="description_value">
+                    {locationDetails.dimension}
+                  </span>
                 </>
               )}
-              {location.residents && (
+              {locationDetails.residents && (
                 <>
                   <span className="description_title">Residents:</span>
-                  <span className="description_value">{location.residents.length}</span>
+                  <span className="description_value">
+                    {locationDetails.residents.length}
+                  </span>
                 </>
               )}
-                </div>
-              </div>
+            </div>
+          </div>
 
-              <div className="episode-names">
-                <span className="description_title">Episode Names:</span>
-                <div className="episode-names_list text-body">
-                  {episodeNames.length > 0 ? (
-                    episodeNames.map((episodeName, index) => (
-                      <span key={index}>{episodeName}</span>
-                      
-                    ))
-                  ) : (
-                    <span>No episodes found</span>
-                  )}
-                </div>
-              </div>
+          <div className="episode-names">
+            <span className="description_title">Episode Names:</span>
+            <div className="episode-names_list text-body">
+              {episodeNames.length > 0 ? (
+                episodeNames.map((episodeName, index) => (
+                  <span key={index}>{episodeName} , </span>
+                ))
+              ) : (
+                <span>No episodes found</span>
+              )}
             </div>
           </div>
         </div>
-      
-   
+      </div>
+    </div>
   );
 };
 
