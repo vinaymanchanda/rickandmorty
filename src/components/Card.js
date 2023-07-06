@@ -7,6 +7,8 @@ const Card = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
 
+
+  //fetching character data using axios
   const getUsers = async () => {
     try {
       const response = await axios.get(
@@ -18,6 +20,8 @@ const Card = () => {
       console.log("Error fetching user data:", error);
     }
   };
+
+    //fetching episode data using using episode URL
 
   const getEpisodeNames = async (episodeUrls) => {
     try {
@@ -34,6 +38,8 @@ const Card = () => {
   useEffect(() => {
     getUsers();
   }, [page]);
+
+    //rendering episode names
 
   const renderEpisodeNames = async (episodeUrls) => {
     try {
